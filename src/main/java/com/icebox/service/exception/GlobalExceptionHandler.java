@@ -1,5 +1,7 @@
 package com.icebox.service.exception;
 
+import com.icebox.service.response.ErrorResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -7,6 +9,10 @@ import org.postgresql.util.PSQLException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.Instant;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,4 +43,69 @@ public class GlobalExceptionHandler {
                 .body("Duplicate value violates unique constraint");
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(
+            EntityNotFoundException ex,
+            WebRequest request
+    ) {
+        String path = extractPath(request);
+
+        ErrorResponse body = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage(),
+                path
+        );
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(
+            IllegalStateException ex,
+            WebRequest request
+    ) {
+        String path = extractPath(request);
+
+        // Use 409 CONFLICT for "has stock and cannot be deleted"
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        ErrorResponse body = new ErrorResponse(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                ex.getMessage(),
+                path
+        );
+
+        return new ResponseEntity<>(body, status);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGenericException(
+            Exception ex,
+            WebRequest request
+    ) {
+        String path = extractPath(request);
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        ErrorResponse body = new ErrorResponse(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                ex.getMessage(),
+                path
+        );
+
+        return new ResponseEntity<>(body, status);
+    }
+
+    private String extractPath(WebRequest request) {
+        if (request instanceof ServletWebRequest servletWebRequest) {
+            return servletWebRequest.getRequest().getRequestURI();
+        }
+        return "";
+    }
 }

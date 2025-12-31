@@ -2,6 +2,8 @@ package com.icebox.service.materials.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +29,7 @@ public class MaterialEntity {
 
     private String type;
     private String unit;
+    private String description;
 
     private Boolean isActive = true;
 
@@ -35,6 +38,6 @@ public class MaterialEntity {
 //    private LocalDateTime lastUpdated;
 
     @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MaterialVariantEntity> variants;
+    private List<MaterialVariantEntity> variants = new ArrayList<>();
 }
 

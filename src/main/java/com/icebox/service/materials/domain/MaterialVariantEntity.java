@@ -18,7 +18,7 @@ public class MaterialVariantEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "tenant_id", nullable = false)
     private String tenantId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,6 +29,7 @@ public class MaterialVariantEntity {
     private String variantName;
 
     private String description;
+    @Column(name="is_active")
     private Boolean isActive = true;
 
 }

@@ -21,6 +21,7 @@ public class MaterialDetailDTO {
     private String unit;
     private BigDecimal currentStock;
     private Boolean isActive;
+    private String description;
     private List<MaterialVariantDTO> variants;
 
 //    private OffsetDateTime lastUpdated;

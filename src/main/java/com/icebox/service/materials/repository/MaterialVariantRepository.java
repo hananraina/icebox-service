@@ -8,7 +8,11 @@ import java.util.List;
 public interface MaterialVariantRepository
         extends JpaRepository<MaterialVariantEntity, Long> {
 
-    List<MaterialVariantEntity> findByTenantIdAndMaterial_Id(
+    List<MaterialVariantEntity> findByTenantIdAndMaterialId(
             String tenantId, Long materialId);
+    MaterialVariantEntity findByTenantIdAndMaterialIdAndId(
+            String tenantId, Long materialId, Long variantId);
+    boolean existsByTenantIdAndMaterialIdAndId(String tenantId, Long materialId, Long variantId);
+    void deleteByTenantIdAndMaterialIdAndId(String tenantId, Long materialId, Long variantId);
 }
 
