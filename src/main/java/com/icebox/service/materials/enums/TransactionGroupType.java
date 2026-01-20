@@ -1,5 +1,5 @@
 package com.icebox.service.materials.enums;
 
-public enum TransactionType {
+public enum TransactionGroupType  {
     PURCHASE, CONSUMPTION, ADJUSTMENT, DAMAGE
 }

@@ -1,6 +1,6 @@
 package com.icebox.service.materials.dto;
 
-import com.icebox.service.materials.enums.TransactionType;
+import com.icebox.service.materials.enums.TransactionGroupType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class StockTransactionDTO {
     private Long materialId;
     private Long variantId;
-    private TransactionType transactionType;
+    private TransactionGroupType transactionGroupType;
     private Integer quantityChange;
     private LocalDateTime transactionDate;
     private String remarks;

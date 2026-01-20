@@ -83,7 +83,7 @@ public class MaterialService {
                     MaterialVariantEntity variant = new MaterialVariantEntity();
                     variant.setTenantId(tenantId);
                     variant.setMaterial(material);
-                    variant.setVariantName(vDto.getVariantName());
+                    variant.setVariantName(vDto.getName());
                     variant.setDescription(vDto.getDescription());
                     variant.setIsActive(
                             vDto.getIsActive() != null ? vDto.getIsActive() : true
@@ -97,8 +97,8 @@ public class MaterialService {
                         throw new IllegalStateException("Variant not found");
                     }
 
-                    if (vDto.getVariantName() != null)
-                        variant.setVariantName(vDto.getVariantName());
+                    if (vDto.getName() != null)
+                        variant.setVariantName(vDto.getName());
                     if (vDto.getDescription() != null)
                         variant.setDescription(vDto.getDescription());
                     if (vDto.getIsActive() != null)

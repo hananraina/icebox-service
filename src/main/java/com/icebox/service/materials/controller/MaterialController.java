@@ -5,7 +5,6 @@ import com.icebox.service.materials.dto.MaterialUpdateRequestDTO;
 import com.icebox.service.materials.service.MaterialService;
 import com.icebox.service.materials.service.VariantService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.TenantId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
