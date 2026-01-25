@@ -6,6 +6,7 @@ import com.icebox.service.materials.dto.*;
 import com.icebox.service.materials.repository.MaterialRepository;
 import com.icebox.service.materials.repository.MaterialStockTransactionRepository;
 import com.icebox.service.materials.repository.MaterialStockTransactionRepository.MaterialStockSummary;
+import com.icebox.service.utils.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,8 @@ public class MaterialService {
     private final MaterialStockTransactionRepository materialStockTransactionRepository;
 
     @Transactional(readOnly = true)
-    public List<MaterialResponse> getMaterials(String tenantId) {
+    public List<MaterialResponse> getMaterials() {
+        String tenantId = getTenantId();
         // 1. Load all materials
         List<MaterialEntity> materials = materialRepository.findAllByTenantId(tenantId);
 
@@ -38,14 +40,16 @@ public class MaterialService {
     }
 
     @Transactional
-    public MaterialResponse createMaterial(CreateMaterialRequestDTO request, String tenantId) {
+    public MaterialResponse createMaterial(CreateMaterialRequestDTO request) {
+        String tenantId = getTenantId();
         MaterialEntity material = MaterialMapper.toMaterialEntity(request, tenantId);
         materialRepository.save(material);
         // Newly created material has no stock yet → 0
         return MaterialMapper.toMaterialResponse(material, 0);
     }
 
-    public void deleteMaterial(String tenantId, Long materialId) {
+    public void deleteMaterial(Long materialId) {
+        String tenantId = getTenantId();
         // 1. Check if material exists
         MaterialEntity material = materialRepository.findByIdAndTenantId(materialId, tenantId).orElseThrow(() -> new EntityNotFoundException("Material with id " + materialId + " not found"));
 
@@ -59,7 +63,8 @@ public class MaterialService {
         materialRepository.deleteByIdAndTenantId(materialId, tenantId);
     }
 
-    public MaterialResponse updateMaterial(Long materialId, String tenantId, MaterialUpdateRequestDTO dto) {
+    public MaterialResponse updateMaterial(Long materialId, MaterialUpdateRequestDTO dto) {
+        String tenantId = getTenantId();
         MaterialEntity material = materialRepository
                 .findById(materialId)
                 .filter(m -> m.getTenantId().equals(tenantId))
@@ -111,7 +116,8 @@ public class MaterialService {
         return MaterialMapper.toMaterialResponse(material, materialStockTransactionRepository.getCurrentStockByMaterialIdAndTenantId(materialId, tenantId));
     }
 
-    public void addVariants(Long materialId, List<CreateVariantRequestDTO> variants, String tenantId) {
+    public void addVariants(Long materialId, List<CreateVariantRequestDTO> variants) {
+        String tenantId = getTenantId();
         MaterialEntity material = materialRepository.findByIdAndTenantId(materialId, tenantId).orElseThrow(() -> new EntityNotFoundException("Material not found"));
 
         if (material.getVariants() == null) {
@@ -122,5 +128,9 @@ public class MaterialService {
             MaterialVariantEntity variant = MaterialMapper.toVariantEntity(v, tenantId, material);
             material.getVariants().add(variant);
         }
+    }
+
+    private String getTenantId() {
+        return SecurityUtils.getClaim("tid"); // tenantId
     }
 }

@@ -20,29 +20,29 @@ public class MaterialController {
     private final VariantService variantService;
 
     @GetMapping
-    public ResponseEntity<?> getAll(@RequestHeader("X-FusionAuth-TenantId") String tenantId) {
-        return ResponseEntity.ok(materialService.getMaterials(tenantId));
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(materialService.getMaterials());
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CreateMaterialRequestDTO request, @RequestHeader("X-FusionAuth-TenantId") String tenantId) {
-        return ResponseEntity.ok(materialService.createMaterial(request, tenantId));
+    public ResponseEntity<?> create(@RequestBody CreateMaterialRequestDTO request) {
+        return ResponseEntity.ok(materialService.createMaterial(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editMaterial(@PathVariable("id") Long materialId,@RequestBody MaterialUpdateRequestDTO dto, @RequestHeader("X-FusionAuth-TenantId") String tenantId) {
-        return ResponseEntity.ok(materialService.updateMaterial(materialId, tenantId, dto));
+    public ResponseEntity<?> editMaterial(@PathVariable("id") Long materialId,@RequestBody MaterialUpdateRequestDTO dto) {
+        return ResponseEntity.ok(materialService.updateMaterial(materialId, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long materialId, @RequestHeader("X-FusionAuth-TenantId") String tenantId) {
-        materialService.deleteMaterial(tenantId, materialId);
+    public ResponseEntity<?> delete(@PathVariable("id") Long materialId) {
+        materialService.deleteMaterial(materialId);
         return ResponseEntity.ok(Map.of("message", "Material deleted"));
     }
 
     @DeleteMapping("/{id}/variants/{variantId}")
-    public ResponseEntity<?> deleteVariant(@PathVariable("id") Long materialId, @PathVariable("variantId") Long variantId, @RequestHeader("X-FusionAuth-TenantId") String tenantId) {
-        variantService.deleteVariant(tenantId, materialId, variantId);
+    public ResponseEntity<?> deleteVariant(@PathVariable("id") Long materialId, @PathVariable("variantId") Long variantId) {
+        variantService.deleteVariant(materialId, variantId);
         return ResponseEntity.ok(Map.of("message", "Variant deleted"));
     }
 

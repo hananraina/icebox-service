@@ -11,6 +11,7 @@ import com.icebox.service.materials.repository.MaterialStockTransactionRepositor
 import com.icebox.service.materials.repository.TransactionGroupRepository;
 import com.icebox.service.materials.response.TransactionGroupDetailsResponse;
 import com.icebox.service.materials.response.TransactionListItem;
+import com.icebox.service.utils.SecurityUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,7 @@ public class MaterialTransactionService {
 
     @Transactional
     public UUID createTransactionGroup(CreateTransactionGroupRequest request) {
-
+        request.setTenantId(getTenantId());
         UUID groupId = UUID.randomUUID();
 
         TransactionGroupEntity group = TransactionGroupEntity.builder()
@@ -106,9 +107,8 @@ public class MaterialTransactionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TransactionListItem> listTransactions(String tenantId, Long materialId, TransactionGroupType groupType, Instant from, Instant to, Pageable pageable) {
-        System.out.println("listTransactions:" + tenantId + " " + materialId + " " + groupType + " " + from + " " + to);
-        return transactionRepository.findTransactions(tenantId, materialId, groupType, from, to, pageable);
+    public Page<TransactionListItem> listTransactions( Long materialId, TransactionGroupType groupType, Instant from, Instant to, Pageable pageable) {
+        return transactionRepository.findTransactions(getTenantId(), materialId, groupType, from, to, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -121,5 +121,8 @@ public class MaterialTransactionService {
         return new TransactionGroupDetailsResponse(group.getId(), group.getGroupType(), group.getReferenceId(), group.getReferenceType(), group.getRemarks(), group.getCreatedAt(), items);
     }
 
+    private String getTenantId() {
+        return SecurityUtils.getClaim("tid"); // tenantId
+    }
 }
 

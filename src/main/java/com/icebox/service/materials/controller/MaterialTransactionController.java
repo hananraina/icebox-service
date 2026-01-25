@@ -25,7 +25,6 @@ public class MaterialTransactionController {
 
     @GetMapping("/transactions")
     public Page<TransactionListItem> listTransactions(
-            @RequestHeader("X-FusionAuth-TenantId") String tenantId,
             @RequestParam(required = false) Long materialId,
             @RequestParam(required = false) TransactionGroupType groupType,
             @RequestParam(required = false)
@@ -37,17 +36,14 @@ public class MaterialTransactionController {
             Pageable pageable
     ) {
         return materialTransactionService.listTransactions(
-                tenantId, materialId, groupType, from, to, pageable
+                materialId, groupType, from, to, pageable
         );
     }
 
     @PostMapping("/transactions")
     @ResponseStatus(HttpStatus.CREATED)
     public UUID createTransaction(
-            @RequestBody @Valid CreateTransactionGroupRequest request,
-            @RequestHeader("X-FusionAuth-TenantId") String tenantId
-    ) {
-        request.setTenantId(tenantId);
+            @RequestBody @Valid CreateTransactionGroupRequest request) {
         return materialTransactionService.createTransactionGroup(request);
     }
 
