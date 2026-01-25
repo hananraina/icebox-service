@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.postgresql.util.PSQLException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -70,6 +71,25 @@ public class GlobalExceptionHandler {
 
         // Use 409 CONFLICT for "has stock and cannot be deleted"
         HttpStatus status = HttpStatus.CONFLICT;
+
+        ErrorResponse body = new ErrorResponse(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                ex.getMessage(),
+                path
+        );
+
+        return new ResponseEntity<>(body, status);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(
+            AuthenticationException ex,
+            WebRequest request
+    ) {
+        String path = extractPath(request);
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         ErrorResponse body = new ErrorResponse(
                 Instant.now(),
