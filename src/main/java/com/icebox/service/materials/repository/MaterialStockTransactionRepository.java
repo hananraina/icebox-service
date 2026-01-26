@@ -4,6 +4,7 @@ import com.icebox.service.materials.domain.MaterialStockTransactionEntity;
 import com.icebox.service.materials.enums.TransactionGroupType;
 import com.icebox.service.materials.response.TransactionGroupDetailsResponse;
 import com.icebox.service.materials.response.TransactionListItem;
+import com.icebox.service.webhooks.domain.UserMirror;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -49,6 +50,7 @@ public interface MaterialStockTransactionRepository extends JpaRepository<Materi
                 t.quantityDelta,
                 g.groupType,
                 g.referenceId,
+                u.fullName,
                 t.sourceType,
                 t.sourceId
             )
@@ -57,6 +59,8 @@ public interface MaterialStockTransactionRepository extends JpaRepository<Materi
             LEFT JOIN t.variant v
             JOIN TransactionGroupEntity g
               ON g.id = t.transactionGroupId
+            LEFT JOIN UserMirror u
+              ON u.id = t.createdByUserId
             WHERE t.tenantId = :tenantId
               AND (:materialId IS NULL OR m.id = :materialId)
               AND (:groupType IS NULL OR g.groupType = :groupType)

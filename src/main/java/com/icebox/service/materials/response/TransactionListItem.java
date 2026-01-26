@@ -24,6 +24,8 @@ public class TransactionListItem {
     private TransactionGroupType groupType;
     private String referenceId;
 
+    private String createdBy;
+
     private String sourceType;
     private String sourceId;
 }

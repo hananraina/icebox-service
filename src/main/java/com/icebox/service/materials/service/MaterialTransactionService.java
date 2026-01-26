@@ -62,7 +62,8 @@ public class MaterialTransactionService {
 
     @Transactional
     public UUID createTransactionGroup(CreateTransactionGroupRequest request) {
-        request.setTenantId(getTenantId());
+        request.setTenantId(currentUser().tenantId());
+        request.setCreatedByUserId(currentUser().userId());
         UUID groupId = UUID.randomUUID();
 
         TransactionGroupEntity group = TransactionGroupEntity.builder()
@@ -108,7 +109,7 @@ public class MaterialTransactionService {
 
     @Transactional(readOnly = true)
     public Page<TransactionListItem> listTransactions( Long materialId, TransactionGroupType groupType, Instant from, Instant to, Pageable pageable) {
-        return transactionRepository.findTransactions(getTenantId(), materialId, groupType, from, to, pageable);
+        return transactionRepository.findTransactions(currentUser().tenantId(), materialId, groupType, from, to, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -121,8 +122,8 @@ public class MaterialTransactionService {
         return new TransactionGroupDetailsResponse(group.getId(), group.getGroupType(), group.getReferenceId(), group.getReferenceType(), group.getRemarks(), group.getCreatedAt(), items);
     }
 
-    private String getTenantId() {
-        return SecurityUtils.getClaim("tid"); // tenantId
+    private SecurityUtils.CurrentUser currentUser() {
+        return SecurityUtils.getCurrentUser();
     }
 }
 
